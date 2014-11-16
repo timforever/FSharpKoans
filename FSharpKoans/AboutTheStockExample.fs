@@ -1,5 +1,6 @@
 ﻿namespace FSharpKoans
 open FSharpKoans.Core
+open System
 
 //---------------------------------------------------------------
 // Apply Your Knowledge!
@@ -57,6 +58,48 @@ module ``about the stock example`` =
 
     [<Koan>]
     let YouGotTheAnswerCorrect() =
-        let result =  __
+        
+        let getColumns (row:string) =
+            row.Split ','
+
+        let parseRow row =
+            None
+
+        let getMaxHiLoDiff (row:string []) =
+            let dayOpen = Double.Parse row.[1]
+            let dayClose = Double.Parse row.[4]
+            let date = row.[0]
+            (date, abs(dayClose - dayOpen))
+
+        let (maxDate, maxDiff) =
+            stockData.Tail
+                |> List.map getColumns
+                |> List.map getMaxHiLoDiff
+                |> List.maxBy (fun (date, diff) -> diff)
+
+        printfn "The biggest difference of %f occurred on %d." maxDiff, maxDate
+
+        let result =  maxDate
         
         AssertEquality "2012-03-13" result
+
+
+(*  This code is some extra I wrote, because I was curious if the adjust close prices column
+    was ever different from close price. Its not. *)
+(*
+        let closeComparison (row:string []) =
+            let adjClose = Double.Parse row.[6]
+            let dayClose = Double.Parse row.[4]
+            adjClose <> dayClose
+
+        let adjustedNotEqualToClose =
+            stockData.Tail
+                |> List.map getColumns
+                |> List.filter closeComparison
+
+        let closeResult =
+            match adjustedNotEqualToClose.IsEmpty with
+                | true -> "No adjusted closes are unequal."
+                | false -> "Some adjusted closes are unequal."
+        printfn "%s" closeResult
+*)
